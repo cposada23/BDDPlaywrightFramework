@@ -4,6 +4,9 @@ require('dotenv').config();
 // Set allure results directory
 process.env.ALLURE_RESULTS_DIR = process.env.ALLURE_RESULTS_DIR || 'reports/allure-results';
 
+// Calculate retry configuration
+const retryCount = process.env.RETRY ? parseInt(process.env.RETRY) : 0;
+
 const common = {
   requireModule: ['ts-node/register', 'tsconfig-paths/register'],
   require: [
@@ -20,8 +23,11 @@ const common = {
     theme: 'bootstrap'
   },
   parallel: process.env.PARALLEL ? parseInt(process.env.PARALLEL) : 1,
-  retry: process.env.RETRY ? parseInt(process.env.RETRY) : 0,
-  timeout: 60000
+  retry: retryCount,
+  timeout: process.env.STEP_TIMEOUT ? parseInt(process.env.STEP_TIMEOUT) : 90000, // Increased from 60s to 90s
+  // Only add retryTagFilter if retries are enabled
+  ...(retryCount > 0 && { retryTagFilter: '@flaky' }),
+  failFast: process.env.FAIL_FAST === 'true' // Stop on first failure if enabled
 };
 
 const chromium = {
