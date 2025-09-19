@@ -4,7 +4,6 @@ dotenv.config();
 
 import { World, IWorldOptions, setWorldConstructor, Before, After, AfterStep, BeforeAll } from '@cucumber/cucumber';
 import { Browser, BrowserContext, Page, chromium, firefox, webkit } from 'playwright';
-import { TestFixtures } from '@fixtures/testFixtures';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -30,7 +29,6 @@ export class CustomWorld extends World<CustomWorldOptions> {
   public browser!: Browser;
   public context!: BrowserContext;
   public page!: Page;
-  public fixtures!: TestFixtures;
   private baseURL: string;
 
   constructor(options: IWorldOptions) {
@@ -89,7 +87,6 @@ export class CustomWorld extends World<CustomWorldOptions> {
     await this.context.tracing.start({ screenshots: true, snapshots: true });
 
     this.page = await this.context.newPage();
-    this.fixtures = new TestFixtures();
   }
 
   async closeBrowser(): Promise<void> {

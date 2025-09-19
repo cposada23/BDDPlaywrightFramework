@@ -2,29 +2,10 @@ import { Page } from 'playwright';
 
 export class TestHelpers {
   /**
-   * Wait for network to be idle (no requests for specified time)
+   * Wait for network to be idle
    */
   static async waitForNetworkIdle(page: Page): Promise<void> {
     await page.waitForLoadState('networkidle', { timeout: 30000 });
-  }
-
-  /**
-   * Generate random test data
-   */
-  static generateTestData() {
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(7);
-    
-    return {
-      email: `test.${random}.${timestamp}@example.com`,
-      username: `user_${random}_${timestamp}`,
-      password: `TestPass${timestamp}!`,
-      firstName: `TestFirst${random}`,
-      lastName: `TestLast${random}`,
-      phoneNumber: `+1${Math.floor(Math.random() * 9000000000) + 1000000000}`,
-      randomString: random,
-      timestamp
-    };
   }
 
   /**
@@ -34,7 +15,9 @@ export class TestHelpers {
     await page.locator(selector).scrollIntoViewIfNeeded();
   }
 
-  /** Scroll to bottom of the page */
+  /** 
+   * Scroll to bottom of the page 
+   */
   static async scrollToBottom(page: Page): Promise<void> {
     await page.keyboard.press('End');
     await page.waitForTimeout(1000);
@@ -121,15 +104,7 @@ export class TestHelpers {
     
     return path;
   }
-
-  /**
-   * Validate email format
-   */
-  static isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
+  
   /**
    * Format duration for reports
    */
