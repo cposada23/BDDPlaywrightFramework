@@ -23,8 +23,11 @@ Given('I hover over {string} and open the {string} section', async function (thi
   await blankFactorHomePage.openItemInSelect(openElement);
 });
 
-When('I scroll down until the section {string}', async function (this: CustomWorld, section: string) {
-  await blankFactorHomePage.scrollDownUntilSection(section);
+When('I copy the text from the 3dht tile', async function (this: CustomWorld) {
+  let text = await blankFactorHomePage.copyTextFromTile(3);
+  console.log(`Text: ${text.trim()}`);
+  let expectedText = "Automate your operations and get to market quickly and securely. Leverage predictive data analytics using machine learning to build reliable, yet forward-thinking financial solutions.";
+  expect(text.trim()).toBe(expectedText);
 });
 
 Then('I should be on the correct URL', async function (this: CustomWorld) {

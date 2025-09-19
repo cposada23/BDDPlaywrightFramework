@@ -37,11 +37,6 @@ export class BlankFactorHomePage extends BasePage {
     await locator.click();
   }
 
-  async scrollDownUntilSection(section: string): Promise<void> {
-    let locator = this.page.locator(`//*[contains(@class, "section-title") and text() = "${section}"]`);
-    await this.waitForElement(locator);
-    await locator.scrollIntoViewIfNeeded();
-  }
 
   /**
    * Verify page title contains expected text
@@ -49,6 +44,19 @@ export class BlankFactorHomePage extends BasePage {
    */
   async verifyPageTitle(expectedTitle: string): Promise<void> {
     await this.verifyElementContainsText(this.pageTitle, expectedTitle);
+  }
+
+  async copyTextFromTile(tile: number): Promise<string> {
+    let locator = this.page.locator(`(//*[contains(@class, 'flip-card-front')])[${tile}]`);
+    await this.waitForElement(locator);
+    await locator.scrollIntoViewIfNeeded();
+    await locator.hover();
+
+    let cardBack = this.page.locator("(//*[contains(@class, 'card-back')])[3]/div");
+    await this.waitForElement(cardBack);
+
+    const text = await this.getElementText(cardBack);
+    return text;
   }
 
 }

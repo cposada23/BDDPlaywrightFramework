@@ -9,4 +9,5 @@ Feature: Blankfactor Automation
 
   Scenario: Form interaction testing
     When I hover over "Industries" and open the "Retirement and wealth" section
-    And I Scroll down until the section "Powering innovation in retirement services"
+    And I copy the text from the 3dht tile
+    
