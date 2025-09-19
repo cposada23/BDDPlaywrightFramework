@@ -43,7 +43,7 @@ Then('I verify that the page is loaded and the page url is {string}', async func
 });
 
 Then('I verify the page title is {string}', async function (this: CustomWorld, title: string) {
-  let pageTitle = await blankFactorHomePage.getPageTitle() + "asdfsfsdf";
+  let pageTitle = await blankFactorHomePage.getPageTitle() // + "asdfsfsdf";
   console.log(`Page Title: ${pageTitle}`);
   expect(pageTitle).toBe(title);
 });

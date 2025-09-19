@@ -17,7 +17,8 @@
     "generate:allure": "node scripts/generateAllureResults.js",
     "report": "npm run generate:allure && allure serve reports/allure-results",
     "report:generate": "npm run generate:allure && allure generate reports/allure-results --clean -o reports/allure-report",
-    "install:browsers": "playwright install"
+    "install:browsers": "playwright install",
+    "trace": "npx playwright show-trace $(ls -t reports/traces/*.zip 2>/dev/null | head -1 || echo 'No trace files found')"
   },
   "keywords": [
     "playwright",
