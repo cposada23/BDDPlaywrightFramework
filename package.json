@@ -1,0 +1,46 @@
+{
+  "name": "playwright-bdd-framework",
+  "version": "1.0.0",
+  "description": "BDD Playwright Framework with TypeScript, Page Objects, and Cross-browser Testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "cucumber-js",
+    "test:chrome": "BROWSER=chrome cucumber-js",
+    "test:chrome:headed": "BROWSER=chrome HEADED=true cucumber-js",
+    "test:firefox": "BROWSER=firefox cucumber-js",
+    "test:webkit": "BROWSER=webkit cucumber-js",
+    "test:webkit:headed": "BROWSER=webkit HEADED=true cucumber-js",
+    "test:headed": "HEADED=true cucumber-js",
+    "test:parallel": "cucumber-js --parallel=2",
+    "report": "allure serve reports/allure-results",
+    "report:generate": "allure generate reports/allure-results --clean -o reports/allure-report",
+    "test:debug": "PWDEBUG=1 cucumber-js",
+    "install:browsers": "playwright install"
+  },
+  "keywords": [
+    "playwright",
+    "bdd",
+    "cucumber",
+    "typescript",
+    "testing",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.8.0",
+    "@cucumber/pretty-formatter": "^1.0.1",
+    "@playwright/test": "^1.44.1",
+    "@types/node": "^20.14.5",
+    "allure-commandline": "^2.24.1",
+    "allure-cucumberjs": "^2.15.0",
+    "cucumber-html-reporter": "^7.1.1",
+    "playwright": "^1.44.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
