@@ -59,3 +59,11 @@ Then('I verify the page title is {string}', async function (this: CustomWorld, t
   
   expect(pageTitle).toBe(title);
 });
+
+Then('I verify the page title contains {string}', async function (this: CustomWorld, titlePart: string) {
+  console.log(`📋 Verifying page title contains: "${titlePart}"`);
+  let pageTitle = await blankFactorHomePage.getPageTitle();
+  console.log(`📄 Current title: "${pageTitle}"`);
+  
+  expect(pageTitle).toContain(titlePart);
+});
