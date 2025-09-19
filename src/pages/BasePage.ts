@@ -23,7 +23,7 @@ export abstract class BasePage {
    * @param locator - The element locator
    * @param timeout - Optional timeout in milliseconds
    */
-  async waitForElement(locator: Locator, timeout: number = 30000): Promise<void> {
+  async waitForElement(locator: Locator, timeout: number = 10000): Promise<void> {
     await locator.waitFor({ state: 'visible', timeout });
   }
 

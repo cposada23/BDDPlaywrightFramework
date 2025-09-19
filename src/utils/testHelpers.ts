@@ -1,5 +1,65 @@
 import { Page } from 'playwright';
 
+/**
+ * Enhanced error handler to provide detailed error information for step failures
+ */
+export function enhanceError(error: any, stepName: string, additionalContext?: string): Error {
+  let errorMessage = `❌ Step Failed: "${stepName}"\n`;
+  
+  // Categorize different types of errors
+  if (error.name === 'TimeoutError' || error.message?.includes('timeout')) {
+    errorMessage += `🕐 Timeout Error: Operation timed out\n`;
+    if (error.message?.includes('waiting for locator')) {
+      errorMessage += `🎯 Issue: Element not found or not interactive\n`;
+    } else if (error.message?.includes('navigation')) {
+      errorMessage += `🌐 Issue: Page navigation timed out\n`;
+    } else if (error.message?.includes('waiting for selector')) {
+      errorMessage += `🔍 Issue: Selector not found within timeout period\n`;
+    }
+  } else if (error.name === 'Error' && error.message?.includes('Element is not attached')) {
+    errorMessage += `🔗 Stale Element Error: Element no longer exists in DOM\n`;
+  } else if (error.message?.includes('not visible')) {
+    errorMessage += `👁️  Visibility Error: Element is not visible\n`;
+  } else if (error.message?.includes('not enabled') || error.message?.includes('disabled')) {
+    errorMessage += `🚫 Interaction Error: Element is disabled\n`;
+  } else if (error.message?.includes('not clickable') || error.message?.includes('intercepted')) {
+    errorMessage += `🖱️  Click Error: Element is not clickable or is being covered\n`;
+  } else if (error.message?.includes('Navigation')) {
+    errorMessage += `🌐 Navigation Error: Failed to navigate to page\n`;
+  } else if (error.name === 'AssertionError' || error.message?.includes('expect')) {
+    errorMessage += `❗ Assertion Error: Expected condition was not met\n`;
+  } else {
+    errorMessage += `⚠️  Unknown Error: ${error.name || 'UnknownError'}\n`;
+  }
+  
+  errorMessage += `📋 Original Error: ${error.message}\n`;
+  
+  if (additionalContext) {
+    errorMessage += `ℹ️  Context: ${additionalContext}\n`;
+  }
+  
+  // Add debugging suggestions based on error type
+  if (error.message?.includes('timeout')) {
+    errorMessage += `💡 Suggestions:\n`;
+    errorMessage += `   • Increase timeout if operation needs more time\n`;
+    errorMessage += `   • Check if element selector is correct\n`;
+    errorMessage += `   • Verify page is fully loaded\n`;
+  } else if (error.message?.includes('not visible')) {
+    errorMessage += `💡 Suggestions:\n`;
+    errorMessage += `   • Check if element is hidden by CSS\n`;
+    errorMessage += `   • Scroll element into view\n`;
+    errorMessage += `   • Wait for animations to complete\n`;
+  }
+  
+  if (error.stack) {
+    errorMessage += `📍 Stack Trace:\n${error.stack}`;
+  }
+  
+  const enhancedError = new Error(errorMessage);
+  enhancedError.name = error.name || 'StepExecutionError';
+  return enhancedError;
+}
+
 export class TestHelpers {
   /**
    * Wait for network to be idle
@@ -119,6 +179,77 @@ export class TestHelpers {
       return `${minutes}m ${seconds % 60}s`;
     } else {
       return `${seconds}s`;
+    }
+  }
+
+  /**
+   * Enhanced step execution wrapper with error handling
+   */
+  static async executeStep<T>(
+    stepName: string,
+    operation: () => Promise<T>,
+    context?: string
+  ): Promise<T> {
+    try {
+      console.log(`🎯 Executing: ${stepName}...`);
+      const result = await operation();
+      console.log(`✅ Success: ${stepName}`);
+      return result;
+    } catch (error) {
+      throw enhanceError(error, stepName, context);
+    }
+  }
+
+  /**
+   * Wait with enhanced error context
+   */
+  static async waitForElementWithContext(
+    page: Page, 
+    selector: string, 
+    options?: { timeout?: number; state?: 'visible' | 'hidden' | 'attached' | 'detached' },
+    context?: string
+  ): Promise<void> {
+    try {
+      await page.locator(selector).waitFor(options || { state: 'visible' });
+    } catch (error) {
+      const enhancedContext = context || `Waiting for element: ${selector}`;
+      throw enhanceError(error, 'Wait for element', enhancedContext);
+    }
+  }
+
+  /**
+   * Click with enhanced error context
+   */
+  static async clickWithContext(
+    page: Page, 
+    selector: string, 
+    stepName: string,
+    context?: string
+  ): Promise<void> {
+    try {
+      await this.waitForElementWithContext(page, selector, { state: 'visible' }, context);
+      await this.waitForElementStable(page, selector);
+      await page.locator(selector).click();
+    } catch (error) {
+      throw enhanceError(error, stepName, context || `Clicking element: ${selector}`);
+    }
+  }
+
+  /**
+   * Type text with enhanced error context
+   */
+  static async typeWithContext(
+    page: Page, 
+    selector: string, 
+    text: string,
+    stepName: string,
+    context?: string
+  ): Promise<void> {
+    try {
+      await this.waitForElementWithContext(page, selector, { state: 'visible' }, context);
+      await page.locator(selector).fill(text);
+    } catch (error) {
+      throw enhanceError(error, stepName, context || `Typing into element: ${selector}`);
     }
   }
 }

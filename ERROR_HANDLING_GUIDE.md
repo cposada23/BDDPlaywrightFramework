@@ -167,26 +167,125 @@ npm run trace
 
 ## 🔧 **Framework Files Modified**
 
-1. **`src/steps/blankFactor.steps.ts`**: 
-   - Added error handling to all steps
+1. **`src/utils/testHelpers.ts`**: 
+   - **NEW**: `enhanceError()` function - Reusable error enhancement across all step files
+   - **NEW**: `TestHelpers.executeStep()` - Wrapper for step execution with automatic error handling
+   - **NEW**: `TestHelpers.clickWithContext()` - Enhanced click with error context
+   - **NEW**: `TestHelpers.typeWithContext()` - Enhanced text input with error context
+   - **NEW**: `TestHelpers.waitForElementWithContext()` - Enhanced element waiting
+
+2. **`src/steps/blankFactor.steps.ts`**: 
+   - Added error handling to all steps using utilities
+   - Imports `enhanceError` from testHelpers
    - Increased default timeout to 90s
    - Enhanced error context
 
-2. **`src/config/world.ts`**:
+3. **`src/config/world.ts`**:
    - Added `ErrorLogger` utility class
    - Enhanced browser setup/teardown
    - Increased hook timeouts
    - Better error recovery
 
-3. **`cucumber.js`**:
+4. **`cucumber.js`**:
    - Increased global timeout to 90s
    - Added configurable timeout via environment
+   - Fixed retry configuration
    - Added retry and fail-fast options
 
-4. **`package.json`**:
+5. **`package.json`**:
    - Added debugging scripts
    - Extended timeout options
+   - Added retry test scripts
+
+## 🔄 **Reusable Error Handling**
+
+The error handling is now completely reusable across all step files! Here are the new utilities:
+
+### 📦 **Core Error Function**
+```typescript
+import { enhanceError } from '@utils/testHelpers';
+
+// Manual error handling
+try {
+  await someOperation();
+} catch (error) {
+  throw enhanceError(error, 'Step name', 'Additional context');
+}
+```
+
+### 🎯 **Step Execution Wrapper** 
+```typescript
+// Automatic error handling with logging
+await TestHelpers.executeStep(
+  'Navigate to login page',
+  async () => {
+    await page.goto('/login');
+    await TestHelpers.waitForNetworkIdle(page);
+  },
+  'Check if login page is accessible'
+);
+```
+
+### 🖱️ **Enhanced Click Helper**
+```typescript
+// Click with automatic error context
+await TestHelpers.clickWithContext(
+  page,
+  'button[data-testid="submit"]',
+  'Click submit button',
+  'Submit button should be enabled after form validation'
+);
+```
+
+### ⌨️ **Enhanced Type Helper**
+```typescript
+// Type with automatic error context
+await TestHelpers.typeWithContext(
+  page,
+  'input[name="username"]',
+  'myusername',
+  'Enter username',
+  'Username field should be visible and editable'
+);
+```
+
+### ⏳ **Enhanced Wait Helper**
+```typescript
+// Wait with automatic error context
+await TestHelpers.waitForElementWithContext(
+  page,
+  '[data-testid="success-message"]',
+  { state: 'visible', timeout: 10000 },
+  'Success message should appear after form submission'
+);
+```
+
+### 🔧 **Using in New Step Files**
+
+When creating new step files, simply import the utilities:
+
+```typescript
+import { enhanceError, TestHelpers } from '@utils/testHelpers';
+
+Given('I do something', async function (this: CustomWorld) {
+  await TestHelpers.executeStep(
+    'Do something',
+    async () => {
+      // Your step logic here
+    },
+    'Context about what should work'
+  );
+});
+```
+
+### 💡 **Benefits of Reusable Error Handling**
+
+✅ **Consistent**: All errors follow the same detailed format
+✅ **Maintainable**: Update error handling in one place
+✅ **Comprehensive**: Enhanced error detection and suggestions
+✅ **Developer-Friendly**: Easy to use in any step file
+✅ **Debuggable**: Rich context and debugging information
 
 ## 🎉 **Result**
 
-**No more generic timeout errors!** You'll now get specific, actionable error messages that help you quickly identify and fix issues. The framework is also more reliable with realistic timeout values.
+**No more generic timeout errors!** You now have a complete, reusable error handling system that provides specific, actionable error messages across your entire test framework. The system is also more reliable with realistic timeout values and built-in error recovery.
