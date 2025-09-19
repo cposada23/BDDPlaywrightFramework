@@ -1,7 +1,5 @@
 # Playwright BDD Framework
 
-A comprehensive BDD (Behavior-Driven Development) testing framework using Playwright, Cucumber, and TypeScript with best practices.
-
 ## 🚀 Features
 
 - **BDD Testing**: Cucumber integration for behavior-driven development
@@ -22,8 +20,7 @@ playwright-bdd-framework/
 │   ├── pages/              # Page Object Model classes
 │   │   ├── BasePage.ts     # Base page with common methods
 │   │   └── ExamplePage.ts  # Example page implementation
-│   ├── steps/              # Cucumber step definitions
-│   │   ├── common.steps.ts # Common step definitions
+│   ├── steps/              # Cucumber step definition
 │   │   └── example.steps.ts# Example-specific steps
 │   ├── fixtures/           # Test data and fixtures
 │   │   └── testFixtures.ts # Test data management
