@@ -12,10 +12,11 @@
     "test:webkit:headed": "BROWSER=webkit HEADED=true cucumber-js",
     "test:headed": "HEADED=true cucumber-js",
     "test:parallel": "cucumber-js --parallel=2",
+    "test:debug": "PWDEBUG=1 cucumber-js",
+    "test:screenshot-all": "SCREENSHOT_ALL_STEPS=true cucumber-js",
     "generate:allure": "node scripts/generateAllureResults.js",
     "report": "npm run generate:allure && allure serve reports/allure-results",
     "report:generate": "npm run generate:allure && allure generate reports/allure-results --clean -o reports/allure-report",
-    "test:debug": "PWDEBUG=1 cucumber-js",
     "install:browsers": "playwright install"
   },
   "keywords": [

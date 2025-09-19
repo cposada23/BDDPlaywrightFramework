@@ -14,6 +14,35 @@ function generateUUID() {
 // Read cucumber JSON report
 const cucumberReport = JSON.parse(fs.readFileSync('reports/cucumber-report.json', 'utf8'));
 
+// Helper function to find screenshots for a specific step
+function findScreenshotForStep(scenarioName, stepName, stepIndex) {
+  const screenshotDir = path.join(__dirname, '..', 'reports', 'screenshots');
+  if (!fs.existsSync(screenshotDir)) {
+    return null;
+  }
+
+  const cleanScenario = scenarioName.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+  const cleanStep = stepName.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+  
+  // Look for screenshots that match this specific step
+  const screenshots = fs.readdirSync(screenshotDir)
+    .filter(file => {
+      const fileName = file.toLowerCase();
+      const scenarioMatch = fileName.includes(cleanScenario.toLowerCase());
+      const stepMatch = fileName.includes(cleanStep.toLowerCase());
+      return scenarioMatch && stepMatch && file.endsWith('.png');
+    })
+    .map(file => path.join(screenshotDir, file))
+    .sort((a, b) => {
+      // Sort by modification time to get the most recent
+      const aStats = fs.statSync(a);
+      const bStats = fs.statSync(b);
+      return bStats.mtime.getTime() - aStats.mtime.getTime();
+    });
+
+  return screenshots.length > 0 ? screenshots[0] : null;
+}
+
 // Create allure-results directory
 const allureResultsDir = 'reports/allure-results';
 if (!fs.existsSync(allureResultsDir)) {
@@ -63,14 +92,42 @@ cucumberReport.forEach(feature => {
         .filter(step => !step.hidden && step.result)
         .map((step, index) => {
           const stepDuration = Math.round(((step.result && step.result.duration) || 0) / 1000000);
-          return {
-            name: `${step.keyword}${step.name || ''}`,
+          const stepName = step.name || '';
+          const fullStepName = `${step.keyword}${stepName}`;
+          
+          const stepResult = {
+            name: fullStepName,
             status: step.result.status || 'skipped',
             stage: 'finished',
             start: now - durationMs + (index * 100),
             stop: now - durationMs + (index * 100) + stepDuration,
             duration: stepDuration
           };
+
+          // Add screenshot attachment if step failed or if screenshot exists
+          const stepStatus = step.result.status;
+          if (stepStatus === 'failed' || process.env.SCREENSHOT_ALL_STEPS === 'true') {
+            const screenshot = findScreenshotForStep(scenario.name, stepName, index + 1);
+            
+            if (screenshot && fs.existsSync(screenshot)) {
+              const attachmentUuid = generateUUID();
+              const attachmentName = `step-${index + 1}-screenshot.png`;
+              
+              // Copy screenshot to allure-results with UUID name
+              const targetPath = path.join(allureResultsDir, `${attachmentUuid}-attachment.png`);
+              fs.copyFileSync(screenshot, targetPath);
+              
+              stepResult.attachments = [{
+                name: attachmentName,
+                source: `${attachmentUuid}-attachment.png`,
+                type: 'image/png'
+              }];
+              
+              console.log(`📎 Attached screenshot to step ${index + 1}: ${fullStepName}`);
+            }
+          }
+
+          return stepResult;
         })
     };
 
@@ -82,6 +139,9 @@ cucumberReport.forEach(feature => {
         trace: failedStep.result.error_message
       };
     }
+
+    // Note: Screenshots are now attached to individual steps rather than the overall test
+    // This provides better clarity about which step failed and when the screenshot was taken
 
     fs.writeFileSync(path.join(allureResultsDir, fileName), JSON.stringify(allureResult, null, 2));
   });
