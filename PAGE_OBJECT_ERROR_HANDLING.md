@@ -54,22 +54,23 @@ Given('I navigate to Blankfactor home page', async function (this: CustomWorld) 
 
 Only keep error handling in step definitions for:
 
-### ✅ **Business Logic Assertions**
+### ✅ **Custom Business Logic** (NOT for expect statements)
 ```typescript
 When('I copy the text from the 3dht tile', async function (this: CustomWorld) {
   let text = await blankFactorHomePage.copyTextFromTile(3); // Page object handles UI errors
   let expectedText = "Expected content...";
   
-  try {
-    expect(text.trim()).toBe(expectedText);
-    console.log('✅ Text matches expected value');
-  } catch (error) {
-    // Step handles business logic assertion errors
-    throw enhanceError(error, 'Verify tile text matches expected content', 
-      `Expected: "${expectedText}" but got: "${text.trim()}". Check if content has changed.`);
-  }
+  // ✅ Let expect handle its own errors - they're already excellent!
+  expect(text.trim()).toBe(expectedText);
+  console.log('✅ Text matches expected value');
 });
 ```
+
+**Why not wrap expect?** 
+- ❌ `expect` already provides excellent error messages with clear diffs
+- ❌ Our wrapper adds unnecessary complexity and obscures the native error
+- ✅ `expect` shows exactly what was expected vs received
+- ✅ `expect` includes helpful context automatically
 
 ### ✅ **Step-Specific Logic**
 ```typescript
@@ -101,11 +102,19 @@ throw enhanceError(
 
 ### **Step Definition Error Context** (Business-focused)
 ```typescript
-// Specific to business expectation
-throw enhanceError(error, 
-  `Verify page URL is "${url}"`, 
-  `Expected URL: "${url}" but got: "${currentURL}". Check if navigation was successful.`
-);
+// Only for custom business logic - NOT for expect statements
+Given('I hover over {string} and open the {string} section', async function (this: CustomWorld, hoverElement: string, openElement: string) {
+  switch (hoverElement) {
+    case 'Industries':
+      await blankFactorHomePage.hoverOverIndustriesSelect();
+      break;
+    default:
+      // Custom validation error handling
+      throw enhanceError(new Error(`Unsupported hover element: ${hoverElement}`), 
+        'Hover over menu element', 'Only "Industries" is currently supported');
+  }
+  await blankFactorHomePage.openItemInSelect(openElement);
+});
 ```
 
 ## 🏗️ **Creating New Page Objects**
@@ -146,9 +155,10 @@ export class NewPageObject extends BasePage {
 
 ### **Step Definition Tests Focus On:**
 - ✅ Business logic flow
-- ✅ Data validation  
-- ✅ Assertion verification
+- ✅ Data validation (custom logic)
 - ✅ Test scenario orchestration
+- ✅ Parameter validation
+- ❌ **NOT wrapping expect** - let expect handle its own excellent errors
 
 ### **Page Object Methods Handle:**
 - ✅ UI element interactions
@@ -171,12 +181,22 @@ export class NewPageObject extends BasePage {
 📍 Stack Trace: [Full stack trace]
 ```
 
-### **Business Logic Error (from Step Definition):**
+### **Expect Assertion Error (Native):**
 ```
-❌ Step Failed: "Verify tile text matches expected content"
-❗ Assertion Error: Expected condition was not met
-📋 Original Error: Expected "New content" but received "Old content"  
-ℹ️  Context: Expected: "New content" but got: "Old content". Check if the text content has changed.
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "New content"
+Received: "Old content"
+
+  at /path/to/test/file.ts:36:37
+```
+
+### **Custom Business Logic Error (from Step Definition):**
+```
+❌ Step Failed: "Hover over menu element"
+⚠️  Unknown Error: Error
+📋 Original Error: Unsupported hover element: Settings
+ℹ️  Context: Only "Industries" is currently supported
 📍 Stack Trace: [Full stack trace]
 ```
 

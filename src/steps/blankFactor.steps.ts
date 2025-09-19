@@ -33,13 +33,8 @@ When('I copy the text from the 3dht tile', async function (this: CustomWorld) {
   let text = await blankFactorHomePage.copyTextFromTile(3);
   let expectedText = "Automate your operations and get to market quickly and securely. Leverage predictive data analytics using machine learning to build reliable, yet forward-thinking financial solutions.";
   
-  try {
-    expect(text.trim()).toBe(expectedText);
-    console.log('✅ Text matches expected value');
-  } catch (error) {
-    throw enhanceError(error, 'Verify tile text matches expected content', 
-      `Expected: "${expectedText}" but got: "${text.trim()}". Check if the text content has changed.`);
-  }
+  expect(text.trim()).toBe(expectedText);
+  console.log('✅ Text matches expected value');
 });
 
 When('I scroll to the bottom of the page and click on the Let\'s get started button', async function (this: CustomWorld) {
@@ -54,13 +49,8 @@ Then('I verify that the page is loaded and the page url is {string}', async func
   console.log(`🔗 Current URL: ${currentURL}`);
   console.log(`🎯 Expected URL: ${url}`);
   
-  try {
-    expect(currentURL).toBe(url);
-    console.log('✅ URL matches expected value');
-  } catch (error) {
-    throw enhanceError(error, `Verify page URL is "${url}"`, 
-      `Expected URL: "${url}" but got: "${currentURL}". Check if navigation was successful.`);
-  }
+  expect(currentURL).toBe(url);
+  console.log('✅ URL matches expected value');
 });
 
 Then('I verify the page title is {string}', async function (this: CustomWorld, title: string) {
@@ -69,11 +59,6 @@ Then('I verify the page title is {string}', async function (this: CustomWorld, t
   console.log(`📄 Current title: "${pageTitle}"`);
   console.log(`🎯 Expected title: "${title}"`);
   
-  try {
-    expect(pageTitle).toBe(title);
-    console.log('✅ Page title matches expected value');
-  } catch (error) {
-    throw enhanceError(error, `Verify page title is "${title}"`, 
-      `Expected title: "${title}" but got: "${pageTitle}". Check if the page has loaded completely and the title is as expected.`);
-  }
+  expect(pageTitle).toBe(title);
+  console.log('✅ Page title matches expected value');
 });

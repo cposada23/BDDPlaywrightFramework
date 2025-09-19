@@ -8,7 +8,6 @@ export class BlankFactorHomePage extends BasePage {
   private readonly industriesSelect: Locator;
   private readonly letsGetStartedButton: Locator;
 
-
   constructor(page: Page) {
     super(page);
     this.pageTitle = this.page.locator('h1');
@@ -70,7 +69,6 @@ export class BlankFactorHomePage extends BasePage {
       );
     }
   }
-
 
   /**
    * Verify page title contains expected text
