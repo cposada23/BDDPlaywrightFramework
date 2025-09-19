@@ -13,5 +13,3 @@ Feature: Blankfactor Automation
     And I scroll to the bottom of the page and click on the Let's get started button
     Then I verify that the page is loaded and the page url is "https://blankfactor.com/contact/"
     And I verify the page title is "Contact | Blankfactor"
-
-    

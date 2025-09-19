@@ -1,6 +1,9 @@
 // Load environment variables from .env file
 require('dotenv').config();
 
+// Set allure results directory
+process.env.ALLURE_RESULTS_DIR = process.env.ALLURE_RESULTS_DIR || 'reports/allure-results';
+
 const common = {
   requireModule: ['ts-node/register', 'tsconfig-paths/register'],
   require: [
