@@ -30,8 +30,20 @@ When('I copy the text from the 3dht tile', async function (this: CustomWorld) {
   expect(text.trim()).toBe(expectedText);
 });
 
-Then('I should be on the correct URL', async function (this: CustomWorld) {
-  // Reuse the existing page object instance
-  const currentURL = await blankFactorHomePage.getCurrentURL();
-  expect(currentURL).toBe('https://blankfactor.com/industries/retirement-and-wealth/');
+When('I scroll to the bottom of the page and click on the Let\'s get started button', async function (this: CustomWorld) {
+  await blankFactorHomePage.scrollToBottom();
+  await blankFactorHomePage.clickLetsGetStartedButton();
+});
+
+Then('I verify that the page is loaded and the page url is {string}', async function (this: CustomWorld, url: string) {
+  await blankFactorHomePage.waitForPageLoad();
+  let currentURL = await blankFactorHomePage.getCurrentURL();
+  console.log(`Current URL: ${currentURL}`);
+  expect(currentURL).toBe(url);
+});
+
+Then('I verify the page title is {string}', async function (this: CustomWorld, title: string) {
+  let pageTitle = await blankFactorHomePage.getPageTitle();
+  console.log(`Page Title: ${pageTitle}`);
+  expect(pageTitle).toBe(title);
 });

@@ -4,7 +4,7 @@ export class TestHelpers {
   /**
    * Wait for network to be idle (no requests for specified time)
    */
-  static async waitForNetworkIdle(page: Page, timeout = 500): Promise<void> {
+  static async waitForNetworkIdle(page: Page): Promise<void> {
     await page.waitForLoadState('networkidle', { timeout: 30000 });
   }
 
@@ -34,6 +34,11 @@ export class TestHelpers {
     await page.locator(selector).scrollIntoViewIfNeeded();
   }
 
+  /** Scroll to bottom of the page */
+  static async scrollToBottom(page: Page): Promise<void> {
+    await page.keyboard.press('End');
+    await page.waitForTimeout(1000);
+  }
   /**
    * Wait for element to be stable (not moving)
    */

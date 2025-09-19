@@ -1,16 +1,19 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { TestHelpers } from '@utils/testHelpers';
 
 export class BlankFactorHomePage extends BasePage {
 
   private readonly pageTitle: Locator;
   private readonly industriesSelect: Locator;
+  private readonly letsGetStartedButton: Locator;
 
 
   constructor(page: Page) {
     super(page);
     this.pageTitle = this.page.locator('h1');
     this.industriesSelect = this.page.locator("//header//a/span[normalize-space(text()) = 'Industries']");
+    this.letsGetStartedButton = this.page.locator('//a[normalize-space(text()) = "Let\'s get started"]');
   }
 
 
@@ -57,6 +60,14 @@ export class BlankFactorHomePage extends BasePage {
 
     const text = await this.getElementText(cardBack);
     return text;
+  }
+
+  async scrollToBottom(): Promise<void> {
+    await TestHelpers.scrollToBottom(this.page);
+  }
+
+  async clickLetsGetStartedButton(): Promise<void> {
+    await this.letsGetStartedButton.click();
   }
 
 }
