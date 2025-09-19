@@ -34,7 +34,6 @@ When('I copy the text from the 3dht tile', async function (this: CustomWorld) {
   let expectedText = "Automate your operations and get to market quickly and securely. Leverage predictive data analytics using machine learning to build reliable, yet forward-thinking financial solutions.";
   
   expect(text.trim()).toBe(expectedText);
-  console.log('✅ Text matches expected value');
 });
 
 When('I scroll to the bottom of the page and click on the Let\'s get started button', async function (this: CustomWorld) {
@@ -50,7 +49,6 @@ Then('I verify that the page is loaded and the page url is {string}', async func
   console.log(`🎯 Expected URL: ${url}`);
   
   expect(currentURL).toBe(url);
-  console.log('✅ URL matches expected value');
 });
 
 Then('I verify the page title is {string}', async function (this: CustomWorld, title: string) {
@@ -60,5 +58,4 @@ Then('I verify the page title is {string}', async function (this: CustomWorld, t
   console.log(`🎯 Expected title: "${title}"`);
   
   expect(pageTitle).toBe(title);
-  console.log('✅ Page title matches expected value');
 });
